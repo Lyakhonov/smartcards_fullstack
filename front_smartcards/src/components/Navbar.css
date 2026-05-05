@@ -1,0 +1,69 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  padding: 14px 24px;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  font-family: "Inter", sans-serif;
+}
+
+/* Левая часть */
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-logo {
+  background: black;
+  color: white;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 20px;
+}
+
+.nav-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Ссылки рядом с логотипом */
+.nav-links {
+  display: flex;
+  gap: 28px;
+  margin-left: 24px; /* Отступ от логотипа */
+}
+
+/* Кнопка выхода справа */
+.nav-logout {
+  margin-left: auto; /* «Толкает» кнопку вправо */
+}
+
+.nav-link {
+  color: #444;
+  font-size: 15px;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.nav-link:hover {
+  color: black;
+}
+
+.nav-link.active {
+  color: black;
+  font-weight: 600;
+}
+
+.logout-btn {
+  background: transparent;
+  border: none;
+  font-size: 15px;
+  cursor: pointer;
+  color: #444;
+  transition: 0.2s;
+}
+
+.logout-btn:hover {
+  color: black;
+}

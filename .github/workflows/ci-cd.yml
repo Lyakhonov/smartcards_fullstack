@@ -1,0 +1,141 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  # Frontend Tests and Linting
+  frontend:
+    runs-on: ubuntu-latest
+    name: Frontend - Tests & Lint
+    defaults:
+      run:
+        working-directory: ./front_smartcards
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: ./front_smartcards/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Run tests
+        run: npm test
+
+  # Backend Tests and Linting
+  backend:
+    runs-on: ubuntu-latest
+    name: Backend - Tests & Lint
+    defaults:
+      run:
+        working-directory: ./smartCards
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: smartcards_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: |
+            ./smartCards/requirements.txt
+            ./smartCards/requirements-test.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-test.txt
+
+      - name: Run linting (flake8)
+        run: flake8 app tests
+        continue-on-error: true
+
+      - name: Run quick tests
+        env:
+          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/smartcards_test
+          SECRET_KEY: test-secret-key
+          MINIO_ENDPOINT: minio:9000
+          MINIO_ACCESS_KEY: minioadmin
+          MINIO_SECRET_KEY: minioadmin
+        run: |
+          pytest tests/test_auth.py -v --tb=short
+          pytest tests/test_groups.py -v --tb=short
+
+  # Build and Push Docker Images
+  build:
+    needs: [frontend, backend]
+    runs-on: ubuntu-latest
+    name: Build Docker Images
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: docker/setup-buildx-action@v2
+
+      - name: Build backend image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./smartCards
+          file: ./smartCards/dockerfile
+          push: false
+          tags: smartcards-backend:latest
+
+      - name: Build frontend image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./front_smartcards
+          file: ./front_smartcards/dockerfile
+          push: false
+          tags: smartcards-frontend:latest
+
+  # Docker Compose Test
+  docker-compose-test:
+    needs: [frontend, backend]
+    runs-on: ubuntu-latest
+    name: Test Docker Compose
+    if: github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: docker/setup-buildx-action@v2
+
+      - name: Start services
+        run: |
+          docker-compose -f docker-compose.yml config
+
+      - name: Check docker-compose syntax
+        run: |
+          docker-compose -f docker-compose.yml config --quiet

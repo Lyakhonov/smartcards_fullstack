@@ -1,0 +1,141 @@
+version: '3.9'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16
+    container_name: smartcards-db
+    restart: always
+    ports:
+      - "${DB_PORT}:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - smartcards-network
+
+  # Backend FastAPI
+  backend:
+    build:
+      context: ./smartCards
+      dockerfile: Dockerfile
+    container_name: smartcards-backend
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      SECRET_KEY: ${SECRET_KEY}
+      ENVIRONMENT: ${ENVIRONMENT}
+      LOG_LEVEL: ${LOG_LEVEL}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+      MINIO_PUBLIC_ENDPOINT: ${MINIO_PUBLIC_ENDPOINT}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      MINIO_SECURE: ${MINIO_SECURE}
+      OLLAMA_ENDPOINT: ${OLLAMA_ENDPOINT}
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/docs" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: >
+      bash -c "alembic upgrade head && python -m app.main"
+    expose:
+      - 8000
+    volumes:
+      - ./smartCards/app:/app/app
+      - ./smartCards/alembic:/app/alembic
+    networks:
+      - smartcards-network
+
+  # Frontend React + Vite
+  frontend:
+    build:
+      context: ./front_smartcards
+      dockerfile: Dockerfile
+    container_name: smartcards-frontend
+    restart: always
+    expose:
+      - 3000
+    healthcheck:
+      test: [ "CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - smartcards-network
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: smartcards-nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - frontend
+      - backend
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost/" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - smartcards-network
+
+  # MinIO (S3-compatible storage)
+  minio:
+    image: minio/minio:latest
+    container_name: smartcards-minio
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
+    command: server /data --console-address ":9001"
+    expose:
+      - 9000
+      - 9001
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - minio_data:/data
+    networks:
+      - smartcards-network
+
+  # Ollama (AI models)
+  ollama:
+    image: ollama/ollama
+    container_name: smartcards-ollama
+    restart: unless-stopped
+    expose:
+      - 11434
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - smartcards-network
+
+volumes:
+  postgres_data:
+  minio_data:
+  ollama_data:
+
+networks:
+  smartcards-network:
+    driver: bridge

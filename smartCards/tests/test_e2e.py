@@ -77,7 +77,9 @@ class TestFlashcardWorkflow:
 
         # 1. Создаем группу вручную (нет endpoint для создания)
         group = Group(
-            id=generate_uuid(), filename="math_basics.pdf", user_id=test_user.id
+            id=generate_uuid(),
+            filename="math_basics.pdf",
+            user_id=test_user.id,
         )
         test_db.add(group)
         await test_db.commit()
@@ -93,7 +95,9 @@ class TestFlashcardWorkflow:
         card_id = card_response.json()["id"]
 
         # 3. Проверяем наличие карточки в группе
-        get_response = authenticated_client.get(f"/flashcards/group/{group_id}")
+        get_response = authenticated_client.get(
+            f"/flashcards/group/{group_id}"
+        )
         assert get_response.status_code == 200
         assert len(get_response.json()) == 1
 
@@ -108,7 +112,9 @@ class TestFlashcardWorkflow:
         assert delete_response.status_code == 200
 
         # 6. Проверяем что карточка удалена
-        final_response = authenticated_client.get(f"/flashcards/group/{group_id}")
+        final_response = authenticated_client.get(
+            f"/flashcards/group/{group_id}"
+        )
         assert len(final_response.json()) == 0
 
 
@@ -194,7 +200,9 @@ class TestErrorHandling:
 
     def test_missing_required_fields(self, client):
         """Обработка отсутствия обязательных полей"""
-        response = client.post("/auth/register", json={"email": "user@example.com"})
+        response = client.post(
+            "/auth/register", json={"email": "user@example.com"}
+        )
         assert response.status_code == 422
 
     def test_concurrent_modifications(self, authenticated_client, test_user):
@@ -213,7 +221,9 @@ class TestBoundaryConditions:
         self, authenticated_client, test_user, test_db
     ):
         """Работа с большим количеством карточек"""
-        group = Group(id=generate_uuid(), filename="Large Group", user_id=test_user.id)
+        group = Group(
+            id=generate_uuid(), filename="Large Group", user_id=test_user.id
+        )
         test_db.add(group)
         await test_db.commit()
 
@@ -240,6 +250,7 @@ class TestBoundaryConditions:
         self, authenticated_client, test_user, test_db
     ):
         """Обработка длинного текста в карточке"""
+
         async def run_test():
             group = Group(
                 id=generate_uuid(), filename="Test Group", user_id=test_user.id

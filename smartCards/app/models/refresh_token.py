@@ -11,7 +11,9 @@ class RefreshToken(Base):
     id = Column(String, primary_key=True, default=generate_uuid)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
     token_hash = Column(String, nullable=False, unique=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    created_at = Column(
+        DateTime(timezone=True), default=datetime.now(timezone.utc)
+    )
     expires_at = Column(DateTime(timezone=True), nullable=False)
     revoked = Column(Boolean, default=False)
     replaced_by = Column(String, nullable=True)  # пока не используется

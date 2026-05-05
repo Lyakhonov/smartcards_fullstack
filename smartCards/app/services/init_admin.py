@@ -9,7 +9,9 @@ from app.core.config import settings
 
 async def create_admin_if_not_exists():
     async with async_session_maker() as session:
-        result = await session.execute(select(User).where(User.role == UserRole.admin))
+        result = await session.execute(
+            select(User).where(User.role == UserRole.admin)
+        )
         existing_admin = result.scalars().first()
 
         if existing_admin:

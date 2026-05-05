@@ -24,7 +24,9 @@ router = APIRouter()
 @router.get("/", response_model=List[GroupResponse])
 async def get_user_groups(
     q: str | None = Query(None, description="Поиск по имени файла"),
-    min_cards: int | None = Query(None, ge=0, description="Минимальное число карточек"),
+    min_cards: int | None = Query(
+        None, ge=0, description="Минимальное число карточек"
+    ),
     sort_by: str = Query(
         "created_at", regex="^(created_at|filename|flashcards_count)$"
     ),
@@ -101,7 +103,9 @@ async def upload_file(
     try:
         storage.ensure_bucket()
         object_name = f"groups/{group_id}/{file.filename}"
-        storage.upload_bytes(contents, object_name, content_type=file.content_type)
+        storage.upload_bytes(
+            contents, object_name, content_type=file.content_type
+        )
     except Exception:
         # if storage fails, continue but note that file_url won't be available
         pass
@@ -131,7 +135,9 @@ async def upload_file(
 @router.delete("/{group_id}")
 async def delete_group(
     group_id: str,
-    current_user: User = Depends(require_role(UserRole.admin, UserRole.manager)),
+    current_user: User = Depends(
+        require_role(UserRole.admin, UserRole.manager)
+    ),
     db: AsyncSession = Depends(get_db),
 ):
     q = select(Group).where(Group.id == group_id)

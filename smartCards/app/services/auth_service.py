@@ -18,10 +18,13 @@ from app.repositories.token_repository import (
 from app.models.user import User
 
 
-async def create_tokens_for_user(db: AsyncSession, user: User) -> Tuple[str, str]:
+async def create_tokens_for_user(
+    db: AsyncSession, user: User
+) -> Tuple[str, str]:
     """Create access token and refresh token (raw) and persist refresh token hash."""
     access = create_access_token(
-        {"sub": user.email}, timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        {"sub": user.email},
+        timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
     )
 
     raw_refresh = generate_refresh_token_raw()
@@ -41,7 +44,9 @@ async def create_tokens_for_user(db: AsyncSession, user: User) -> Tuple[str, str
     return access, raw_refresh
 
 
-async def refresh_tokens(db: AsyncSession, raw_refresh_token: str) -> Tuple[str, str]:
+async def refresh_tokens(
+    db: AsyncSession, raw_refresh_token: str
+) -> Tuple[str, str]:
     """Validate refresh token and rotate (create new refresh token, revoke old one).
     Returns (access_token, new_raw_refresh_token).
     """

@@ -12,9 +12,13 @@ class Settings:
     ALGORITHM = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES = 60
     # Refresh token lifetime (days)
-    REFRESH_TOKEN_EXPIRE_DAYS = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", "30"))
+    REFRESH_TOKEN_EXPIRE_DAYS = int(
+        os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", "30")
+    )
     # Cookie name for refresh token
-    REFRESH_TOKEN_COOKIE_NAME = os.getenv("REFRESH_TOKEN_COOKIE_NAME", "refresh_token")
+    REFRESH_TOKEN_COOKIE_NAME = os.getenv(
+        "REFRESH_TOKEN_COOKIE_NAME", "refresh_token"
+    )
 
     DATABASE_URL = os.getenv(
         "DATABASE_URL",
@@ -28,13 +32,17 @@ class Settings:
 
     # MinIO / S3 compatible settings
     MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT", "minio:9000")
-    MINIO_PUBLIC_ENDPOINT = os.getenv("MINIO_PUBLIC_ENDPOINT", "http://localhost:9000")
+    MINIO_PUBLIC_ENDPOINT = os.getenv(
+        "MINIO_PUBLIC_ENDPOINT", "http://localhost:9000"
+    )
     MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY", "minioadmin")
     MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY", "minioadmin")
     MINIO_BUCKET = os.getenv("MINIO_BUCKET", "smartcards-files")
     MINIO_SECURE = os.getenv("MINIO_SECURE", "0") in ("1", "true", "True")
     # Public endpoint used in presigned URLs (browser access)
-    MINIO_PUBLIC_ENDPOINT = os.getenv("MINIO_PUBLIC_ENDPOINT", "http://localhost:9000")
+    MINIO_PUBLIC_ENDPOINT = os.getenv(
+        "MINIO_PUBLIC_ENDPOINT", "http://localhost:9000"
+    )
     # MinIO Console (browser) endpoint
     MINIO_CONSOLE_ENDPOINT = os.getenv(
         "MINIO_CONSOLE_ENDPOINT", "http://localhost:9001"

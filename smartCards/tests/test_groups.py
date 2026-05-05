@@ -13,11 +13,17 @@ class TestGroupRetrieval:
     """Тесты получения групп"""
 
     @pytest.mark.asyncio
-    async def test_get_user_groups(self, authenticated_client, test_user, test_db):
+    async def test_get_user_groups(
+        self, authenticated_client, test_user, test_db
+    ):
         """Получение списка групп пользователя"""
         # Создаем несколько групп
         groups = [
-            Group(id=generate_uuid(), filename=f"group_{i}.pdf", user_id=test_user.id)
+            Group(
+                id=generate_uuid(),
+                filename=f"group_{i}.pdf",
+                user_id=test_user.id,
+            )
             for i in range(3)
         ]
         test_db.add_all(groups)
@@ -40,7 +46,9 @@ class TestGroupRetrieval:
         assert len(data) == 0
 
     @pytest.mark.asyncio
-    async def test_get_groups_isolation(self, authenticated_client, test_user, test_db):
+    async def test_get_groups_isolation(
+        self, authenticated_client, test_user, test_db
+    ):
         """Группы видны только их владельцу"""
         # Создаем второго пользователя
         other_user = User(
@@ -55,7 +63,9 @@ class TestGroupRetrieval:
         # Их группы
         my_groups = [
             Group(
-                id=generate_uuid(), filename=f"my_group_{i}.pdf", user_id=test_user.id
+                id=generate_uuid(),
+                filename=f"my_group_{i}.pdf",
+                user_id=test_user.id,
             )
             for i in range(2)
         ]
@@ -83,11 +93,15 @@ class TestGroupFiltering:
     """Тесты фильтрации группп"""
 
     @pytest.mark.asyncio
-    async def test_get_groups_search(self, authenticated_client, test_user, test_db):
+    async def test_get_groups_search(
+        self, authenticated_client, test_user, test_db
+    ):
         """Поиск групп по имени файла"""
         groups = [
             Group(
-                id=generate_uuid(), filename="python_basics.pdf", user_id=test_user.id
+                id=generate_uuid(),
+                filename="python_basics.pdf",
+                user_id=test_user.id,
             ),
             Group(
                 id=generate_uuid(),
@@ -106,16 +120,24 @@ class TestGroupFiltering:
         assert "python" in data[0]["filename"]
 
     @pytest.mark.asyncio
-    async def test_get_groups_sorting(self, authenticated_client, test_user, test_db):
+    async def test_get_groups_sorting(
+        self, authenticated_client, test_user, test_db
+    ):
         """Сортировка групп"""
         groups = [
-            Group(id=generate_uuid(), filename=f"group_{i}.pdf", user_id=test_user.id)
+            Group(
+                id=generate_uuid(),
+                filename=f"group_{i}.pdf",
+                user_id=test_user.id,
+            )
             for i in range(3)
         ]
         test_db.add_all(groups)
         await test_db.commit()
 
-        response = authenticated_client.get("/groups/?sort_by=filename&order=asc")
+        response = authenticated_client.get(
+            "/groups/?sort_by=filename&order=asc"
+        )
 
         assert response.status_code == 200
         data = response.json()

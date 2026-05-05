@@ -70,7 +70,11 @@ class StorageService:
             # Бакет настроен на публичное чтение, поэтому подписи не нужны
             # URL: http://localhost/storage/smartcards-files/groups/...
             public_url = (
-                self.public_endpoint.rstrip("/") + "/" + self.bucket + "/" + object_name
+                self.public_endpoint.rstrip("/")
+                + "/"
+                + self.bucket
+                + "/"
+                + object_name
             )
             return public_url
         except Exception as e:

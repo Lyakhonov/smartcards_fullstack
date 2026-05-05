@@ -9,7 +9,11 @@ from app.core.security import get_current_user
 from app.core.utils import generate_uuid
 from app.models.flashcard import Flashcard
 from app.models.group import Group
-from app.schemas.flashcard import FlashcardCreate, FlashcardResponse, FlashcardUpdate
+from app.schemas.flashcard import (
+    FlashcardCreate,
+    FlashcardResponse,
+    FlashcardUpdate,
+)
 
 router = APIRouter()
 
@@ -35,7 +39,9 @@ async def create_flashcard(
     db: AsyncSession = Depends(get_db),
 ):
     # Проверяем, что группа принадлежит пользователю
-    q = select(Group).where(Group.id == group_id, Group.user_id == current_user.id)
+    q = select(Group).where(
+        Group.id == group_id, Group.user_id == current_user.id
+    )
     res = await db.execute(q)
     group = res.scalars().first()
 

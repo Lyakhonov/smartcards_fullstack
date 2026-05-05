@@ -20,6 +20,10 @@ class User(Base):
     password = Column(String, nullable=False)
     full_name = Column(String, nullable=True)
     role = Column(Enum(UserRole), default=UserRole.user, nullable=False)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    created_at = Column(
+        DateTime(timezone=True), default=datetime.now(timezone.utc)
+    )
 
-    groups = relationship("Group", back_populates="user", cascade="all, delete-orphan")
+    groups = relationship(
+        "Group", back_populates="user", cascade="all, delete-orphan"
+    )

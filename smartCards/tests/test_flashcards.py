@@ -16,7 +16,9 @@ class TestFlashcardCreation:
     ):
         """Успешное создание флеш-карточки в группе пользователя"""
         # Сначала создаем группу
-        group = Group(id=generate_uuid(), filename="Test Group", user_id=test_user.id)
+        group = Group(
+            id=generate_uuid(), filename="Test Group", user_id=test_user.id
+        )
         test_db.add(group)
         await test_db.commit()
 
@@ -34,7 +36,9 @@ class TestFlashcardCreation:
         assert data["user_id"] == test_user.id
 
     @pytest.mark.asyncio
-    async def test_create_flashcard_nonexistent_group(self, authenticated_client):
+    async def test_create_flashcard_nonexistent_group(
+        self, authenticated_client
+    ):
         """Ошибка при создании карточки в несуществующей группе"""
         response = authenticated_client.post(
             "/flashcards/?group_id=nonexistent_id",
@@ -46,7 +50,9 @@ class TestFlashcardCreation:
     @pytest.mark.asyncio
     async def test_create_flashcard_no_auth(self, client, test_user, test_db):
         """Ошибка при попытке создать карточку без авторизации"""
-        group = Group(id=generate_uuid(), filename="Test Group", user_id=test_user.id)
+        group = Group(
+            id=generate_uuid(), filename="Test Group", user_id=test_user.id
+        )
         test_db.add(group)
         await test_db.commit()
 
@@ -63,12 +69,15 @@ class TestFlashcardCreation:
         self, authenticated_client, test_user, test_db
     ):
         """Ошибка при пустом вопросе"""
-        group = Group(id=generate_uuid(), filename="Test Group", user_id=test_user.id)
+        group = Group(
+            id=generate_uuid(), filename="Test Group", user_id=test_user.id
+        )
         test_db.add(group)
         await test_db.commit()
 
         response = authenticated_client.post(
-            f"/flashcards/?group_id={group.id}", json={"question": "", "answer": "4"}
+            f"/flashcards/?group_id={group.id}",
+            json={"question": "", "answer": "4"},
         )
 
         # Может быть 422 если есть валидация на пустоту
@@ -86,7 +95,9 @@ class TestFlashcardRetrieval:
         from app.models.flashcard import Flashcard
 
         # Создаем группу
-        group = Group(id=generate_uuid(), filename="Test Group", user_id=test_user.id)
+        group = Group(
+            id=generate_uuid(), filename="Test Group", user_id=test_user.id
+        )
         test_db.add(group)
         await test_db.commit()
 
@@ -117,7 +128,9 @@ class TestFlashcardRetrieval:
         self, authenticated_client, test_user, test_db
     ):
         """Получение карточек из пустой группы"""
-        group = Group(id=generate_uuid(), filename="Empty Group", user_id=test_user.id)
+        group = Group(
+            id=generate_uuid(), filename="Empty Group", user_id=test_user.id
+        )
         test_db.add(group)
         await test_db.commit()
 
@@ -147,7 +160,9 @@ class TestFlashcardRetrieval:
 
         # Его группа
         group = Group(
-            id=generate_uuid(), filename="Other User Group", user_id=other_user.id
+            id=generate_uuid(),
+            filename="Other User Group",
+            user_id=other_user.id,
         )
         test_db.add(group)
         await test_db.commit()
@@ -181,7 +196,9 @@ class TestFlashcardUpdate:
         """Успешное обновление флеш-карточки"""
         from app.models.flashcard import Flashcard
 
-        group = Group(id=generate_uuid(), filename="Test Group", user_id=test_user.id)
+        group = Group(
+            id=generate_uuid(), filename="Test Group", user_id=test_user.id
+        )
         test_db.add(group)
         await test_db.commit()
 
@@ -232,7 +249,9 @@ class TestFlashcardUpdate:
         test_db.add(other_user)
         await test_db.commit()
 
-        group = Group(id=generate_uuid(), filename="Other Group", user_id=other_user.id)
+        group = Group(
+            id=generate_uuid(), filename="Other Group", user_id=other_user.id
+        )
         test_db.add(group)
         await test_db.commit()
 
@@ -264,7 +283,9 @@ class TestFlashcardDeletion:
         """Успешное удаление флеш-карточки"""
         from app.models.flashcard import Flashcard
 
-        group = Group(id=generate_uuid(), filename="Test Group", user_id=test_user.id)
+        group = Group(
+            id=generate_uuid(), filename="Test Group", user_id=test_user.id
+        )
         test_db.add(group)
         await test_db.commit()
 
@@ -283,7 +304,9 @@ class TestFlashcardDeletion:
         assert response.status_code == 200
 
         # Проверяем, что карточка удалена
-        check_response = authenticated_client.get(f"/flashcards/group/{group.id}")
+        check_response = authenticated_client.get(
+            f"/flashcards/group/{group.id}"
+        )
         assert len(check_response.json()) == 0
 
     @pytest.mark.asyncio

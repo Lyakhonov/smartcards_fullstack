@@ -57,7 +57,11 @@ class TestUserRegistration:
         """Ошибка при коротком пароле (если есть валидация)"""
         response = client.post(
             "/auth/register",
-            json={"email": "user@example.com", "password": "123", "full_name": "User"},
+            json={
+                "email": "user@example.com",
+                "password": "123",
+                "full_name": "User",
+            },
         )
 
         # Если валидация минимальной длины пароля имеет место
@@ -66,7 +70,9 @@ class TestUserRegistration:
 
     def test_register_missing_fields(self, client):
         """Ошибка при отсутствии обязательных полей"""
-        response = client.post("/auth/register", json={"email": "user@example.com"})
+        response = client.post(
+            "/auth/register", json={"email": "user@example.com"}
+        )
 
         assert response.status_code == 422
 
@@ -87,13 +93,18 @@ class TestUserLogin:
         assert data["token_type"] == "bearer"
 
         # Проверяем, что установлен refresh token cookie
-        assert "refresh_token" in response.cookies or response.headers.get("set-cookie")
+        assert "refresh_token" in response.cookies or response.headers.get(
+            "set-cookie"
+        )
 
     def test_login_invalid_email(self, client):
         """Ошибка при входе с несуществующим email"""
         response = client.post(
             "/auth/login",
-            data={"username": "nonexistent@example.com", "password": "password123"},
+            data={
+                "username": "nonexistent@example.com",
+                "password": "password123",
+            },
         )
 
         assert response.status_code == 401
@@ -159,7 +170,9 @@ class TestRefreshToken:
 
         # В режиме тестирования refresh_token возвращается в теле
         refresh_token = login_data.get("refresh_token")
-        assert refresh_token, "Refresh token should be in response body in TESTING mode"
+        assert (
+            refresh_token
+        ), "Refresh token should be in response body in TESTING mode"
 
         # Отправляем refresh token в теле запроса
         refresh_response = client.post(

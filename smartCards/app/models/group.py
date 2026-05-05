@@ -14,7 +14,9 @@ class Group(Base):
     id = Column(String, primary_key=True, default=generate_uuid)
     filename = Column(String, nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    created_at = Column(
+        DateTime(timezone=True), default=datetime.now(timezone.utc)
+    )
 
     user = relationship("User", back_populates="groups")
     flashcards = relationship(

@@ -108,7 +108,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./smartCards
-          file: ./smartCards/dockerfile
+          file: ./smartCards/Dockerfile
           push: false
           tags: smartcards-backend:latest
 
@@ -116,7 +116,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./front_smartcards
-          file: ./front_smartcards/dockerfile
+          file: ./front_smartcards/Dockerfile
           push: false
           tags: smartcards-frontend:latest
 
@@ -134,8 +134,8 @@ jobs:
 
       - name: Start services
         run: |
-          docker-compose -f docker-compose.yml config
+          docker compose -f docker-compose.yml config
 
       - name: Check docker-compose syntax
         run: |
-          docker-compose -f docker-compose.yml config --quiet
+          docker compose -f docker-compose.yml config --quiet

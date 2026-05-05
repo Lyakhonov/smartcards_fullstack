@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import Navbar from "../components/Navbar";
 import api from "../api";
 import { useAuth } from "../AuthContext";
@@ -21,11 +21,7 @@ export default function Users() {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
 
-  useEffect(() => {
-    load();
-  }, []);
-
-  const load = async () => {
+  const load = useCallback(async () => {
     try {
       setLoading(true);
       const res = await api.get<User[]>("/admin/users");
@@ -38,29 +34,30 @@ export default function Users() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const filteredUsersMemo = useMemo(() => {
+    return users.filter(
+      (u) =>
+        u.email.toLowerCase().includes(query.toLowerCase()) ||
+        (u.full_name?.toLowerCase() ?? "").includes(query.toLowerCase()),
+    );
+  }, [users, query]);
 
   // keep page within bounds when users or perPage change
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage((p) => {
-      const filtered = filteredUsersMemo();
+      const filtered = filteredUsersMemo;
       const pages = Math.max(1, Math.ceil(filtered.length / perPage));
       return Math.min(p, pages);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [users, perPage]);
-
-  // memoized filtered users helper
-  const filteredUsersMemo = () => {
-    const q = query.trim().toLowerCase();
-    if (!q) return users;
-    return users.filter((u) => {
-      return (
-        (u.full_name || "").toLowerCase().includes(q) ||
-        (u.email || "").toLowerCase().includes(q)
-      );
-    });
-  };
 
   const saveRole = async (id: string) => {
     await api.put(`/admin/users/${id}/role`, {
@@ -117,9 +114,9 @@ export default function Users() {
         </div>
 
         <div className="history-list">
-          {filteredUsersMemo()
+          {filteredUsersMemo
             .slice((page - 1) * perPage, page * perPage)
-            .map((u) => (
+            .map((u: User) => (
               <div key={u.id} className="history-item">
                 <div className="history-info">
                   <div>
@@ -178,7 +175,7 @@ export default function Users() {
               </div>
             ))}
 
-          {!loading && filteredUsersMemo().length === 0 && (
+          {!loading && filteredUsersMemo.length === 0 && (
             <p>Нет пользователей</p>
           )}
         </div>
@@ -193,11 +190,11 @@ export default function Users() {
 
           <span>
             Стр. {page} /{" "}
-            {Math.max(1, Math.ceil(filteredUsersMemo().length / perPage))}
+            {Math.max(1, Math.ceil(filteredUsersMemo.length / perPage))}
           </span>
 
           <button
-            disabled={page >= Math.ceil(filteredUsersMemo().length / perPage)}
+            disabled={page >= Math.ceil(filteredUsersMemo.length / perPage)}
             onClick={() => setPage((p) => p + 1)}
           >
             Next

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import api from "../api";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
@@ -24,12 +24,7 @@ export default function History() {
   const nav = useNavigate();
   const { user } = useAuth();
 
-  useEffect(() => {
-    loadGroups();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query, page, perPage, sortBy, order]);
-
-  const loadGroups = async () => {
+  const loadGroups = useCallback(async () => {
     const params: QueryParams = {
       q: query || undefined,
       sort_by: sortBy,
@@ -70,7 +65,12 @@ export default function History() {
 
     setGroups(items);
     setTotalItems(total);
-  };
+  }, [query, sortBy, order, page, perPage]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadGroups();
+  }, [loadGroups]);
 
   const deleteGroup = async (id: number) => {
     if (!window.confirm("Удалить группу?")) return;

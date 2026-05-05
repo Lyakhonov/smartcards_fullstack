@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import api from "../api";
 import Navbar from "../components/Navbar";
 import { Flashcard } from "../types";
@@ -11,7 +11,7 @@ export default function Group() {
   const [loading, setLoading] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true);
     try {
       const res = await api.get<Flashcard[]>(`/flashcards/group/${id}`);
@@ -21,7 +21,7 @@ export default function Group() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   const del = async (cid: number) => {
     if (!confirm("Удалить карточку?")) return;
@@ -54,8 +54,9 @@ export default function Group() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
-  }, [id]);
+  }, [load]);
 
   if (loading) return <div className="group-loading">Загрузка...</div>;
 
@@ -119,7 +120,7 @@ export default function Group() {
                       </button>
 
                       {c.id !== undefined && (
-                        <button onClick={() => del(c.id)}>🗑 Удалить</button>
+                        <button onClick={() => del(c.id as number)}>🗑 Удалить</button>
                       )}
                     </div>
                   </>

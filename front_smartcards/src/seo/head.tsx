@@ -25,65 +25,61 @@ const APP_URL =
     : "https://smartcards.example.com";
 
 export function useSEOHead(props?: SEOHeadProps) {
-  try {
-    const location = useLocation();
+  const location = useLocation();
 
-    useEffect(() => {
-      try {
-        const route = getRouteConfig(location.pathname);
+  useEffect(() => {
+    try {
+      const route = getRouteConfig(location.pathname);
 
-        // Title
-        const title = props?.title || route?.title || "SmartCards";
-        document.title = title;
+      // Title
+      const title = props?.title || route?.title || "SmartCards";
+      document.title = title;
 
-        // Description
-        const description =
-          props?.description ||
-          route?.description ||
-          "SmartCards - превратите документы в обучающие материалы";
-        updateMetaTag("description", description);
+      // Description
+      const description =
+        props?.description ||
+        route?.description ||
+        "SmartCards - превратите документы в обучающие материалы";
+      updateMetaTag("description", description);
 
-        // Canonical URL
-        const canonical = props?.canonical || `${APP_URL}${location.pathname}`;
-        updateCanonicalTag(canonical);
+      // Canonical URL
+      const canonical = props?.canonical || `${APP_URL}${location.pathname}`;
+      updateCanonicalTag(canonical);
 
-        // Open Graph
-        updateMetaTag("og:title", props?.ogTitle || title, "property");
-        updateMetaTag(
-          "og:description",
-          props?.ogDescription || description,
-          "property",
-        );
-        updateMetaTag(
-          "og:image",
-          props?.ogImage || DEFAULT_OG_IMAGE,
-          "property",
-        );
-        updateMetaTag("og:type", props?.ogType || "website", "property");
-        updateMetaTag("og:url", canonical, "property");
+      // Open Graph
+      updateMetaTag("og:title", props?.ogTitle || title, "property");
+      updateMetaTag(
+        "og:description",
+        props?.ogDescription || description,
+        "property",
+      );
+      updateMetaTag(
+        "og:image",
+        props?.ogImage || DEFAULT_OG_IMAGE,
+        "property",
+      );
+      updateMetaTag("og:type", props?.ogType || "website", "property");
+      updateMetaTag("og:url", canonical, "property");
 
-        // Robots
-        if (props?.noindex || !route?.isPublic) {
-          updateMetaTag("robots", "noindex, nofollow");
-        } else {
-          updateMetaTag("robots", "index, follow");
-        }
-
-        // Twitter Card
-        updateMetaTag("twitter:card", "summary_large_image");
-        updateMetaTag("twitter:title", props?.ogTitle || title);
-        updateMetaTag(
-          "twitter:description",
-          props?.ogDescription || description,
-        );
-        updateMetaTag("twitter:image", props?.ogImage || DEFAULT_OG_IMAGE);
-      } catch (e) {
-        console.error("Error in useSEOHead effect:", e);
+      // Robots
+      if (props?.noindex || !route?.isPublic) {
+        updateMetaTag("robots", "noindex, nofollow");
+      } else {
+        updateMetaTag("robots", "index, follow");
       }
-    }, [location.pathname, props]);
-  } catch (e) {
-    console.error("Error in useSEOHead:", e);
-  }
+
+      // Twitter Card
+      updateMetaTag("twitter:card", "summary_large_image");
+      updateMetaTag("twitter:title", props?.ogTitle || title);
+      updateMetaTag(
+        "twitter:description",
+        props?.ogDescription || description,
+      );
+      updateMetaTag("twitter:image", props?.ogImage || DEFAULT_OG_IMAGE);
+    } catch (e) {
+      console.error("Error in useSEOHead effect:", e);
+    }
+  }, [location.pathname, props]);
 }
 
 /**

@@ -63,4 +63,3 @@ async def external_api_health():
             content={"status": "unhealthy"},
             status_code=503,
         )
-

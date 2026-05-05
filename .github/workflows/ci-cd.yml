@@ -73,9 +73,6 @@ jobs:
           pip install -r requirements.txt
           pip install -r requirements-test.txt
 
-      - name: Format code with black
-        run: black app tests --line-length=88
-
       - name: Run linting (flake8)
         run: flake8 app tests
         continue-on-error: true

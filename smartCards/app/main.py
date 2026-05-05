@@ -53,9 +53,7 @@ app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(groups.router, prefix="/groups", tags=["groups"])
 
 # Маршруты для флеш-карточек
-app.include_router(
-    flashcards.router, prefix="/flashcards", tags=["flashcards"]
-)
+app.include_router(flashcards.router, prefix="/flashcards", tags=["flashcards"])
 
 # Админские маршруты
 app.include_router(admin.router, prefix="/admin", tags=["admin"])

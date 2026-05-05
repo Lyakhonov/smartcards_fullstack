@@ -2,7 +2,6 @@
  * Простые интеграционные тесты для компонентов
  */
 import { describe, it, expect, beforeEach } from "vitest";
-import axios from "axios";
 
 // Моки
 const mockAuthAPI = {

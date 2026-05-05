@@ -99,7 +99,7 @@ export const SEO_ROUTES: SEORoute[] = [
  */
 export function getRouteConfig(pathname: string): SEORoute | undefined {
   // Точное совпадение
-  let route = SEO_ROUTES.find((r) => r.path === pathname);
+  const route = SEO_ROUTES.find((r) => r.path === pathname);
   if (route) return route;
 
   // Совпадение с параметрами (например /group/:id)

@@ -39,14 +39,15 @@ PUBLIC_ROUTES = [
 async def robots_txt():
     """
     Возвращает robots.txt для управления индексацией поисковыми системами
-    
+
     Правила:
     - Разрешаем индексацию публичных маршрутов
     - Запрещаем индексацию приватных маршрутов
     - Указываем задержку между запросами
     - Ссылка на sitemap
     """
-    content = """# SmartCards robots.txt
+    content = (
+        """# SmartCards robots.txt
 # Generated automatically
 
 # Allow all bots to crawl public content
@@ -73,7 +74,9 @@ Disallow: /*.py$
 Crawl-delay: 1
 
 # Sitemap location
-Sitemap: """ + f"{BASE_URL}/sitemap.xml"
+Sitemap: """
+        + f"{BASE_URL}/sitemap.xml"
+    )
 
     return Response(content=content, media_type="text/plain")
 
@@ -82,7 +85,7 @@ Sitemap: """ + f"{BASE_URL}/sitemap.xml"
 async def sitemap_xml():
     """
     Возвращает sitemap.xml со всеми публичными маршрутами
-    
+
     Формат: XML согласно стандарту https://www.sitemaps.org/
     Включает:
     - loc: URL страницы

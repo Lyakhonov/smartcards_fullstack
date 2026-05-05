@@ -15,7 +15,7 @@ vi.mock("../api", () => ({
 }));
 
 // Компонент-обертка для тестирования hooks
-const TestComponent = () => {
+function TestComponentInner() {
   const { token, user, isAuth, login, logout } = useAuth();
 
   return (
@@ -29,7 +29,7 @@ const TestComponent = () => {
       <button onClick={() => logout()}>Logout</button>
     </div>
   );
-};
+}
 
 describe("AuthContext", () => {
   beforeEach(() => {
@@ -40,7 +40,7 @@ describe("AuthContext", () => {
   it("должен быть начальный state без токена", () => {
     render(
       <AuthProvider>
-        <TestComponent />
+        <TestComponentInner />
       </AuthProvider>,
     );
 
@@ -53,7 +53,7 @@ describe("AuthContext", () => {
 
     render(
       <AuthProvider>
-        <TestComponent />
+        <TestComponentInner />
       </AuthProvider>,
     );
 
@@ -73,7 +73,7 @@ describe("AuthContext", () => {
 
     render(
       <AuthProvider>
-        <TestComponent />
+        <TestComponentInner />
       </AuthProvider>,
     );
 
@@ -91,7 +91,7 @@ describe("AuthContext", () => {
 
     render(
       <AuthProvider>
-        <TestComponent />
+        <TestComponentInner />
       </AuthProvider>,
     );
 

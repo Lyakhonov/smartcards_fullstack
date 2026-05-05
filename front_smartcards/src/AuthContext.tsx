@@ -37,6 +37,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const [user, setUser] = useState<User | null>(null);
 
+  const logout = () => {
+    // try to inform backend; ignore errors
+    api.post("/auth/logout").catch(() => {});
+    localStorage.removeItem("token");
+    setToken(null);
+    setUser(null);
+  };
+
   // Загружаем пользователя при наличии токена
   useEffect(() => {
     if (!token) return;
@@ -50,14 +58,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = (t: string) => {
     localStorage.setItem("token", t);
     setToken(t);
-  };
-
-  const logout = () => {
-    // try to inform backend; ignore errors
-    api.post("/auth/logout").catch(() => {});
-    localStorage.removeItem("token");
-    setToken(null);
-    setUser(null);
   };
 
   return (

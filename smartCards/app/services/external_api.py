@@ -19,7 +19,6 @@ RETRY_DELAY = 1  # секунда
 CACHE_TTL = 300  # 5 минут
 
 
-
 class CacheEntry:
     """Простое кэширование с TTL"""
 
@@ -102,8 +101,7 @@ async def fetch_with_retry(
                             await asyncio.sleep(RETRY_DELAY)
                             continue
                     raise Exception(
-                        f"API Error: {response.status} "
-                        f"{response.reason}"
+                        f"API Error: {response.status} " f"{response.reason}"
                     )
         except asyncio.TimeoutError:
             if attempt < retries:
@@ -138,9 +136,7 @@ async def get_random_users(count: int = 3) -> list:
         # Random User API поддерживает только эти страны
         # для близких к русскому языку/культуре
         nationalities = ["ua", "rs"]
-        per_country = (count + len(nationalities) - 1) // len(
-            nationalities
-        )
+        per_country = (count + len(nationalities) - 1) // len(nationalities)
 
         for nat in nationalities:
             if len(users) >= count:

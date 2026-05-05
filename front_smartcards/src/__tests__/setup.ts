@@ -1,7 +1,7 @@
 /**
  * Настройка для тестов: моки, глобальные переменные и т.д.
  */
-import { expect, afterEach, vi } from "vitest";
+import { afterEach } from "vitest";
 import { cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 
@@ -35,6 +35,8 @@ Object.defineProperty(window, "localStorage", {
 // Подавляем ошибки консоли во время тестов (опционально)
 global.console = {
   ...console,
-  error: vi.fn(),
-  warn: vi.fn(),
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  error: (_message?: unknown, ..._optionalParams: unknown[]) => {},
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  warn: (_message?: unknown, ..._optionalParams: unknown[]) => {},
 };

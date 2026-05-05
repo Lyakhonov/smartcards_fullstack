@@ -57,11 +57,11 @@ async def login_user(
 
     # set refresh token in secure httpOnly cookie and return access token JSON
     response_data = {"access_token": access_token, "token_type": "bearer"}
-    
-    # In testing mode, include refresh token in response body for TestClient compatibility
+
+    # In testing mode, include refresh token in response body for TestClient
     if settings.TESTING:
         response_data["refresh_token"] = refresh_token
-    
+
     response = JSONResponse(response_data)
 
     # Always set httpOnly cookie (ignored in testing but good practice)
@@ -88,7 +88,7 @@ async def get_me(current_user: User = Depends(get_current_user)):
 async def refresh(request: Request, db: AsyncSession = Depends(get_db)):
     # Try to get refresh token from cookie first (production)
     raw = request.cookies.get(settings.REFRESH_TOKEN_COOKIE_NAME)
-    
+
     # In testing mode, also try to get from request body (for TestClient)
     if not raw and settings.TESTING:
         try:
@@ -96,7 +96,7 @@ async def refresh(request: Request, db: AsyncSession = Depends(get_db)):
             raw = body.get("refresh_token")
         except Exception:
             pass
-    
+
     if not raw:
         raise HTTPException(status_code=401, detail="Missing refresh token")
 
@@ -105,11 +105,11 @@ async def refresh(request: Request, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Invalid refresh token")
 
     response_data = {"access_token": new_access, "token_type": "bearer"}
-    
+
     # In testing mode, include refresh token in response body
     if settings.TESTING:
         response_data["refresh_token"] = new_refresh
-    
+
     response = JSONResponse(response_data)
 
     response.set_cookie(

@@ -3,7 +3,7 @@
  */
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
-import { afterAll, afterEach, beforeAll, vi } from "vitest";
+import { afterAll, afterEach, beforeAll } from "vitest";
 
 // Определяем базовый URL API
 const API_BASE = "http://localhost:8000";

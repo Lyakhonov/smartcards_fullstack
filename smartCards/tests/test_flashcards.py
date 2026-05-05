@@ -144,7 +144,7 @@ class TestFlashcardRetrieval:
     async def test_get_flashcards_other_user_group(
         self, authenticated_client, test_user, test_db
     ):
-        """Получение карточек из группы другого пользователя должно вернуть пусто"""
+        """Получение карточек группы другого пользователя вернет пусто"""
         from app.models.user import User, UserRole
         from app.models.flashcard import Flashcard
 
